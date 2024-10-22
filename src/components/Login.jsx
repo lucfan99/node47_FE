@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Box, CardMedia } from "@mui/material";
 
 import { Videos, ChannelCard } from ".";
-import { loginAPI } from "../utils/fetchFromAPI";
+import { loginAPI, loginFacebookAPI } from "../utils/fetchFromAPI";
 import { toast } from "react-toastify";
 import ReactFacebookLogin from "react-facebook-login";
 
@@ -57,11 +57,31 @@ const Login = () => {
             >
               Login
             </button>
+            <Link className="text-primary" to="/forgot-password">
+              Forgot Password
+            </Link>
             <ReactFacebookLogin
               appId="2172751213095985"
               fields="name,email,picture"
               callback={(response) => {
                 console.log(response);
+                let { email, name, id } = response;
+                let payload = { email, name, id };
+                loginFacebookAPI(payload)
+                  .then((result) => {
+                    //Lưu access token vào local Storage
+                    localStorage.setItem("LOGIN_USER", result.token);
+
+                    //hiển thị login fb thành công
+                    toast.success(result.message);
+
+                    //navigate về trang home
+                    navigate("/");
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    toast.error(err.response.data.message);
+                  });
               }}
             />
           </div>

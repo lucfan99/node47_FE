@@ -3,6 +3,7 @@ import { Stack } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
 import { getTypeVideoAPI } from "../utils/fetchFromAPI";
+import { toast } from "react-toastify";
 
 // let categories = [
 //   { type_name: "New", icon: <i className="fa-solid fa-house"></i> },
@@ -33,8 +34,8 @@ const Categories = ({ selectedCategory, setSelectedCategory }) => {
         console.log(result);
         setCategories(result);
       })
-      .catch(() => {
-        console.log("error call api get list type from BE");
+      .catch((err) => {
+        toast.error(err.response.data.message);
       });
   }, []);
 
@@ -47,7 +48,7 @@ const Categories = ({ selectedCategory, setSelectedCategory }) => {
         flexDirection: { md: "column" },
       }}
     >
-      {categories.map((category) => (
+      {categories?.map((category) => (
         <button
           className="category-btn"
           onClick={() => navigate("/videoType/" + category.type_id)}
